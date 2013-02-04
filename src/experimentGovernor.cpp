@@ -31,7 +31,7 @@ Stimulus::Stimulus(types type, string data)
 void Stimulus::_setup() 
 {
 	_font.loadFont("verdana.ttf", 80, true, true);
-	_fontColor = ofColor(0,220,0);
+	_fontColor = ofColor(255,255,255);
 	_stimulusCenter = ofPoint(ofGetWindowWidth()/2, ofGetWindowHeight()/2);
 	_isPlaying = false;
 	//std::stringstream ss;
@@ -49,7 +49,7 @@ void Stimulus::playStimulus()
 		if (!_isPlaying) {
 			//ofSoundPlayer _mySound;
 			_mySound.loadSound(_data); //DOCUMENTATION PAGE EXAMPLE IS WRONG
-			_mySound.setVolume(0.75f);
+			_mySound.setVolume(0.005f);
 			_mySound.play();
 		}
 

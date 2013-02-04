@@ -19,7 +19,6 @@ LoggerThread::LoggerThread() {
 	_fileName = fileDateTimeString(ofGetElapsedTimeMillis());
 }
 LoggerThread::LoggerThread(string logDirPath) {
-	_logDirPath = logDirPath;
 	setDirPath(logDirPath);
 }
 	
@@ -37,6 +36,7 @@ LoggerThread::~LoggerThread() {
 }
 
 void LoggerThread::setDirPath(string logDirPath) {
+	_logDirPath = logDirPath;
 	_fileName = fileDateTimeString(ofGetElapsedTimeMillis());
 }
 
