@@ -49,7 +49,7 @@ void Stimulus::playStimulus()
 		if (!_isPlaying) {
 			//ofSoundPlayer _mySound;
 			_mySound.loadSound(_data); //DOCUMENTATION PAGE EXAMPLE IS WRONG
-			_mySound.setVolume(0.005f);
+			_mySound.setVolume(0.05f);
 			_mySound.play();
 		}
 
