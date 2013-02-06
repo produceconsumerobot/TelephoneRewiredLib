@@ -137,12 +137,42 @@ void StimulusPlayer::_setup()
 	//_stimulusCenter = ofPoint(ofGetWindowWidth()/2, ofGetWindowHeight()/2);
 }
 
+int StimulusPlayer::loadStimuli()
+{
+	return loadStimuli(_textFilePath, _soundDirPath);
+}
+
 int StimulusPlayer::loadStimuli(string textFilePath, string soundDirPath) 
 {
 	//cout << "StimulusPlayer::loadStimuli  " << myGetElapsedTimef() << "\n";
 
 	// Load sounds
 	std::vector<Stimulus> sounds;
+
+#ifdef junklla
+//#ifdef WIN32
+	WIN32_FIND_DATA data;
+
+	std::string audioExt = "*.mp3";
+	std::string strPattern = soundDirPath + audioExt;
+	//std::string s = "data/stimuli/testing/audio/form1/*.mp3";
+	std::wstring ws(strPattern.begin(), strPattern.end());
+
+	HANDLE hFile = FindFirstFile((LPCWSTR) ws.c_str(), &data);
+//	HANDLE hFile = FindFirstFile(L"*.dll", &data);
+	if  (hFile != INVALID_HANDLE_VALUE) {
+		while(FindNextFile(hFile, &data) != 0 || GetLastError() != ERROR_NO_MORE_FILES)
+		{
+			wcout << data.cFileName << std::endl;
+			std:wstring wfn(data.cFileName);
+			std::string fn(wfn.begin(), wfn.end());
+			//std:string fn(wfn.begin(), wfn.end());
+			sounds.push_back(Stimulus(Stimulus::Sound, soundDirPath + fn));
+			cout << soundDirPath + fn << "\n";
+		}
+	}
+	
+#else
 	//string t = ofToDataPath(soundDirPath);
 	ofDirectory dir1(ofToDataPath(soundDirPath)); // REPORT BUG
 	ofDirectory dir(soundDirPath);
@@ -161,11 +191,13 @@ int StimulusPlayer::loadStimuli(string textFilePath, string soundDirPath)
 		//cout << "StimulusPlayer::loadStimuli dir.numFiles(); " << myGetElapsedTimef() << "\n";
 		for (int i=0; i<n; i++) {
 			sounds.push_back(Stimulus(Stimulus::Sound, dir.getPath(i)));
+			cout << dir.getPath(i) << "\n";
 			//cout << "StimulusPlayer::loadStimuli dir.getPath " << myGetElapsedTimef() << "\n";
 		}
 	}
 	//cout << "StimulusPlayer::loadStimuli sounds loaded " << myGetElapsedTimef() << "\n";
 	dir.close();
+#endif
 
 	// Load Text
 	std::vector<Stimulus> text;
@@ -361,6 +393,11 @@ void InstructionsPlayer::buttonPressed()
 	} 
 }
 
+int InstructionsPlayer::getPageNum() 
+{
+	return _currentPage;
+}
+
 void InstructionsPlayer::goToPage(int i)
 {
 	if (i != _currentPage) {
@@ -447,7 +484,7 @@ void ExperimentGovernor::addStimulusPaths(string textFilePath, string soundDirPa
 
 void ExperimentGovernor::setStimulusPaths(std::vector< std::vector< string > > stimulusPaths)
 {
-	stimulusPaths = stimulusPaths;
+	_stimulusPaths = stimulusPaths;
 }
 
 
@@ -480,6 +517,7 @@ void ExperimentGovernor::goToState(states state)
 			string s = getStateString(_currentState);
 			ofNotifyEvent(newState, s, this);
 			_instructionsPlayer->goToPage(0);
+			//_stimulusPlayer->loadStimuli();
 		}
 		break;
 
@@ -545,6 +583,11 @@ void ExperimentGovernor::goToState(states state)
 		break;
 	}
 	update();
+}
+
+ExperimentGovernor::states ExperimentGovernor::getState() 
+{
+	return _currentState;
 }
 
 string ExperimentGovernor::getStateString(states state) 

@@ -9,6 +9,13 @@
 //  To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/.
 //
 
+#include<stdio.h>
+#include<cstdlib>
+#include<iostream>
+#include<string.h>
+#include<fstream>
+//#include<dirent.h>
+
 #include <vector>
 #include <algorithm> // includes max function
 #include "ofMain.h"
@@ -93,6 +100,7 @@ public:
 	**		Loads stimuli from path
 	*/
 	int loadStimuli(string textFilePath, string soundDirPath);
+	int loadStimuli();
 
 	/*
 	** void setTimes(unsigned long baseOnTime, unsigned long randOnTime, unsigned long interStimulusDelay)
@@ -180,6 +188,7 @@ public:
 	void goToPage(int i);
 	int remaining();
 	void setParticipantCode(unsigned long participantCode);
+	int getPageNum();
 
 	ofEvent<int> newPage;
 	ofEvent<int> drawPage;
