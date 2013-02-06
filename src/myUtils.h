@@ -66,4 +66,19 @@ private:
 	void addKey(char key, bool state);
 };
 
+static string wrapText(string input, int nChars)
+{
+	string output = "";
+	int i=0;
+	for (; i<input.size(); i+=nChars) {
+		for (int j=0; j<nChars; j++) {
+			if (i+j<input.size()) {
+				output = output + input.at(i+j);
+			}
+		}
+		output = output + "\n";
+	}
+	return output;
+};
+
 #endif

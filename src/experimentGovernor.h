@@ -136,7 +136,6 @@ public:
 
 	void randomizeStimuli(); // Randomizes the stimulus order
 
-
 	/* 
 	** updateStimulus()
 	**	ALGORITHM:

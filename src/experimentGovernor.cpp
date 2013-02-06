@@ -274,7 +274,7 @@ void StimulusPlayer::randomizeStimuli()
 {
 	_stimulusCycle = _allStimuli;
 	ofRandomize(_stimulusCycle);
-	_stimulusCycle.erase(_stimulusCycle.begin(), _stimulusCycle.begin() + _nStimuliToShow);
+	_stimulusCycle.erase(_stimulusCycle.begin() + _nStimuliToShow, _stimulusCycle.end());
 }
 
 void StimulusPlayer::buttonPressed() 
@@ -314,6 +314,7 @@ int StimulusPlayer::update() {
 
 		// Load the appropriate stimuli
 		loadStimuli(_textFilePath, _soundDirPath);
+		randomizeStimuli();
 		//Start the Stimulus Player
 		start();
 
