@@ -28,7 +28,7 @@ FreqOutThread::FreqOutThread() {
 	_currentFreqStartTime = myGetElapsedTimeMillis();
 	_currentOutputStartTime = myGetElapsedTimeMillis();
 	_sendMidi = true;
-	_printOut = OUTPUT_DELAYS;
+	_printOut = NONE;
 
 	_midiChannel = 0;
 	_midiId  = 0;

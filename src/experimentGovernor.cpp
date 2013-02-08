@@ -229,6 +229,8 @@ int StimulusPlayer::loadStimuli(string textFilePath, string soundDirPath)
 	_nStimuliToShow = _stimulusCycle.size();
 	_stimulusIterator = _nStimuliToShow;
 
+	randomizeStimuli();
+	
 	//cout << "END StimulusPlayer::loadStimuli " << myGetElapsedTimef() << "\n";
 	return 0;
 }
