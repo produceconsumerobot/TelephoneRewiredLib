@@ -53,6 +53,7 @@ public:
 	int getCurrentOutDelay();
 	bool getCurrentOutState();
 	void resetFreqCycle();
+	void setCycleLooping(bool cycleLooping);
 
 	ofEvent<bool> outputChanged;
 	ofEvent<float> freqChanged;
@@ -69,6 +70,7 @@ private:
 	int _nFreqs;
 	int _freqIterator;
 	std::vector<freqInterval> _freqCycle;
+	bool _cycleLooping;
 
 	unsigned long _currentFreqStartTime; // milliseconds
 	unsigned long _currentOutputStartTime; // milliseconds
@@ -110,6 +112,7 @@ private:
 
 	float _getCurrentFreq();
 	float _getCurrentDuration();
+	void iterateFreq(); 
 
 	// debugging rollover of ofElapsedTime
 	bool debuggingRollover;

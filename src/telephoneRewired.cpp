@@ -30,6 +30,8 @@ FreqOutThread::FreqOutThread() {
 	_sendMidi = true;
 	_printOut = NONE;
 
+	_cycleLooping = true; // default to infinite looping the cycle for backward compatibility
+
 	_midiChannel = 0;
 	_midiId  = 0;
 	_midiValue = 0;
@@ -176,6 +178,13 @@ void FreqOutThread::resetFreqCycle()
 {
 	_freqIterator = 0;
 	_outputDelay = 0.0;
+}
+
+// setCycleLooping
+// Turns on/off looping of the freq cycle
+void FreqOutThread::setCycleLooping(bool cycleLooping)
+{
+	_cycleLooping = cycleLooping;
 }
 
 // printFreqCycle
@@ -456,6 +465,21 @@ void FreqOutThread::turnOutputsOff() {
 	//unlock();
 }
 
+// iterateFreq
+// iterates the freqIterator and rolls over if cycleLooping or
+// stops the update thread otherwise.
+void FreqOutThread::iterateFreq()
+{
+	int temp = _freqIterator + 1; // iterate to the next frequency 
+	if (temp >= _nFreqs) {
+		if (_cycleLooping) { // Loop around the freq cycle
+			_freqIterator = temp % _nFreqs; // rollover if at the end
+		} else { // Stop the update thread
+			this->waitForThread( true ); // Stop the update thread
+			//resetFreqCycle();
+		}
+	}
+}
 
 // update
 // Updates the outputs, check the current frequency duration 
@@ -516,7 +540,7 @@ void FreqOutThread::update() {
 
 			// If we've gone over the current duration
 			if ((startTime - _currentFreqStartTime) >= (_getCurrentDuration() * 1000)) {
-				_freqIterator = ( _freqIterator + 1 ) % _nFreqs; // iterate to the next frequency and rollover if at the end
+				_freqIterator = ( _freqIterator + 1 ) % _nFreqs; 
 				_currentFreqStartTime = startTime; // Reset the timer
 
 				// Send a callback that frequency has changed
@@ -524,7 +548,12 @@ void FreqOutThread::update() {
 				ofNotifyEvent(freqChanged, f, this);
 			}
 
-			_outputDelay = (1. / _getCurrentFreq() / 2.); // set the output delay to 1/2 period
+			if (_getCurrentFreq() == -1) { // if we iterated past the end of the freqCycle
+				turnOutputsOff(); // Turn everything off
+				_outputDelay = -1;
+			} else { // if current freq is still valid
+				_outputDelay = (1. / _getCurrentFreq() / 2.); // set the output delay to 1/2 period
+			}
 
 			//int loopTime = (int) (1000. * (ofGetElapsedTimef() - startTime));
 
