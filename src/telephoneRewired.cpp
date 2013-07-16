@@ -293,9 +293,13 @@ void FreqOutThread::setupArduino(const int & version) {
 			// Setup pin for PWM
 			_arduino.sendDigitalPinMode(_ledPins.at(i), ARD_PWM);
 			_arduino.update();
+			_arduino.sendPwm(_ledPins.at(i), 0);
+			_arduino.update();
 		} else {
 			// Setup pin for digital out
 			_arduino.sendDigitalPinMode(_ledPins.at(i), ARD_OUTPUT);
+			_arduino.update();
+			_arduino.sendDigital(_ledPins.at(i), ARD_LOW);
 			_arduino.update();
 		}
 	}
