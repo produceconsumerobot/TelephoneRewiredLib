@@ -29,10 +29,7 @@ LoggerThread::~LoggerThread() {
 	//	waitForThread(true); // Stops thread and waits for thread to be cleaned up
 	//}
 
-	while(!loggerQueue.empty()) {
-		log(loggerQueue.front());
-		loggerQueue.pop();
-	}
+	logAll();
 }
 
 void LoggerThread::setDirPath(string logDirPath) {
@@ -67,7 +64,6 @@ string LoggerThread::fileDateTimeString(unsigned long long ofTime)
     return output;
 }
 
-
 void LoggerThread::log(string data) {
 	ofDirectory dir(_logDirPath);
 	dir.create(true);
@@ -84,14 +80,23 @@ void LoggerThread::log(string data) {
     mFile.close();
 }
 
+void LoggerThread::logNext() {
+	if (!loggerQueue.empty()) {
+		log(loggerQueue.front());
+		loggerQueue.pop();
+	}
+}
+
+void LoggerThread::logAll() {
+	while (!loggerQueue.empty()) {
+		logNext();
+	}
+}
 
 void LoggerThread::threadedFunction() {
 	while (isThreadRunning()) {
 		lock();
-		if (!loggerQueue.empty()) {
-			log(loggerQueue.front());
-			loggerQueue.pop();
-		}
+		logAll();
 		unlock();
 
 		sleep(10);

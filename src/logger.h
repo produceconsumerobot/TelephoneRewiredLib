@@ -44,13 +44,15 @@ class LoggerThread : public ofThread {
 private:
 	string _logDirPath;
 	string _fileName;
-	void log(string data);
 public:
 	LoggerThread();
 	~LoggerThread();
 	LoggerThread(string logDirPath);
 	void setDirPath(string logDirPath);
 	string fileDateTimeString(unsigned long long ofTime);
+	void log(string data);
+	void logNext();
+	void logAll();
 
 	void threadedFunction();
 

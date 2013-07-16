@@ -22,7 +22,7 @@ FreqOutThread::FreqOutThread() {
 	printf("FreqOutThread()\n");
 #endif
 	_output = false;
-	_outputDelay = 0.0;
+	_outputDelay = -1;
 	_nFreqs = 0;
 	_freqIterator = -1;
 	_currentFreqStartTime = myGetElapsedTimeMillis();
@@ -140,7 +140,10 @@ void FreqOutThread::setFreqCycle(std::vector< freqInterval > freqs) {
 	_freqCycle = freqs;
 	_nFreqs = _freqCycle.size();
 
-	_freqIterator = 0;
+	if (_cycleLooping) {
+		//_freqIterator = 0;
+		resetFreqCycle();
+	}
 
 	// Send a callback that frequency has changed
 	float f = _getCurrentFreq();
@@ -165,7 +168,10 @@ void FreqOutThread::setFreqCycle(const int nFreqs, const float freqs[][2]) {
 		_freqCycle.at(i).duration = freqs[i][1];
 	}
 
-	_freqIterator = 0;
+	if (_cycleLooping) {
+		//_freqIterator = 0;
+		resetFreqCycle();
+	}
 
 	// Send a callback that frequency has changed
 	float f = _getCurrentFreq();
@@ -178,6 +184,7 @@ void FreqOutThread::resetFreqCycle()
 {
 	_freqIterator = 0;
 	_outputDelay = 0.0;
+	_currentFreqStartTime = myGetElapsedTimeMillis();
 }
 
 // setCycleLooping
@@ -466,17 +473,16 @@ void FreqOutThread::turnOutputsOff() {
 }
 
 // iterateFreq
-// iterates the freqIterator and rolls over if cycleLooping or
+// Iterates the freqIterator and rolls over if cycleLooping or
 // stops the update thread otherwise.
 void FreqOutThread::iterateFreq()
 {
-	int temp = _freqIterator + 1; // iterate to the next frequency 
-	if (temp >= _nFreqs) {
+	_freqIterator++; // iterate to the next frequency 
+	if (_freqIterator >= _nFreqs) {
 		if (_cycleLooping) { // Loop around the freq cycle
-			_freqIterator = temp % _nFreqs; // rollover if at the end
-		} else { // Stop the update thread
-			this->waitForThread( true ); // Stop the update thread
-			//resetFreqCycle();
+			resetFreqCycle(); // reset if at the end
+		} else { // turn off outputs
+			turnOutputsOff();
 		}
 	}
 }
@@ -540,7 +546,8 @@ void FreqOutThread::update() {
 
 			// If we've gone over the current duration
 			if ((startTime - _currentFreqStartTime) >= (_getCurrentDuration() * 1000)) {
-				_freqIterator = ( _freqIterator + 1 ) % _nFreqs; 
+				iterateFreq(); // iterate to the next frequency
+
 				_currentFreqStartTime = startTime; // Reset the timer
 
 				// Send a callback that frequency has changed
